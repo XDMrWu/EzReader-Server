@@ -1,7 +1,7 @@
-package com.wulinpeng.reader
+package com.wulinpeng.ezreader
 
-import com.wulinpeng.reader.crypto.aesSecretKey
-import com.wulinpeng.reader.plugins.*
+import com.wulinpeng.ezreader.crypto.aesSecretKey
+import com.wulinpeng.ezreader.plugins.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*

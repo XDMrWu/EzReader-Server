@@ -1,8 +1,8 @@
-package com.wulinpeng.reader.route
+package com.wulinpeng.ezreader.route
 
-import com.wulinpeng.reader.crypto.AESManager
-import com.wulinpeng.reader.route.model.EmptyData
-import com.wulinpeng.reader.route.model.EzResponse
+import com.wulinpeng.ezreader.crypto.AESManager
+import com.wulinpeng.ezreader.route.model.EmptyData
+import com.wulinpeng.ezreader.route.model.EzResponse
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 

@@ -18,11 +18,11 @@ plugins {
     id("de.jensklingenberg.ktorfit") version "1.13.0"
 }
 
-group = "com.wulinpeng.reader"
+group = "com.wulinpeng.ezreader"
 version = "0.0.1"
 
 application {
-    mainClass.set("com.wulinpeng.reader.ApplicationKt")
+    mainClass.set("com.wulinpeng.ezreader.ApplicationKt")
 
     val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")

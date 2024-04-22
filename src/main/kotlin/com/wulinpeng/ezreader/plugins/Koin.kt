@@ -1,4 +1,4 @@
-package com.wulinpeng.reader.plugins
+package com.wulinpeng.ezreader.plugins
 
 import io.ktor.server.application.*
 import org.koin.core.Koin
@@ -19,5 +19,5 @@ fun Application.configureKoin() {
 }
 
 @Module
-@ComponentScan("com.wulinpeng.reader")
+@ComponentScan("com.wulinpeng.ezreader")
 class KoinModule

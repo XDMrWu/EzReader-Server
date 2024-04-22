@@ -1,4 +1,4 @@
-package com.wulinpeng.reader.crypto
+package com.wulinpeng.ezreader.crypto
 
 import java.util.*
 import javax.crypto.Cipher

@@ -1,8 +1,8 @@
-package com.wulinpeng.reader.route.model
+package com.wulinpeng.ezreader.route.model
 
-import com.wulinpeng.reader.route.generateId
-import com.wulinpeng.reader.source.core.Book
-import com.wulinpeng.reader.source.core.Chapter
+import com.wulinpeng.ezreader.route.generateId
+import com.wulinpeng.ezreader.source.core.Book
+import com.wulinpeng.ezreader.source.core.Chapter
 import kotlinx.serialization.Serializable
 
 @Serializable

@@ -1,8 +1,8 @@
-package com.wulinpeng.reader.route
+package com.wulinpeng.ezreader.route
 
-import com.wulinpeng.reader.plugins.EzReaderRouteConfigure
-import com.wulinpeng.reader.route.model.EzBook
-import com.wulinpeng.reader.source.BookSourceManager
+import com.wulinpeng.ezreader.plugins.EzReaderRouteConfigure
+import com.wulinpeng.ezreader.route.model.EzBook
+import com.wulinpeng.ezreader.source.BookSourceManager
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*

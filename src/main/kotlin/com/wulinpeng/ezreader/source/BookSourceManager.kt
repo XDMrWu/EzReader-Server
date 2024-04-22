@@ -1,8 +1,8 @@
-package com.wulinpeng.reader.source
+package com.wulinpeng.ezreader.source
 
-import com.wulinpeng.reader.plugins.defaultKoin
-import com.wulinpeng.reader.source.core.Book
-import com.wulinpeng.reader.source.core.BookSource
+import com.wulinpeng.ezreader.plugins.defaultKoin
+import com.wulinpeng.ezreader.source.core.Book
+import com.wulinpeng.ezreader.source.core.BookSource
 import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 

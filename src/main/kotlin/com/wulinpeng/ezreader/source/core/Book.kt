@@ -1,4 +1,4 @@
-package com.wulinpeng.reader.source.core
+package com.wulinpeng.ezreader.source.core
 
 import java.io.Serializable
 

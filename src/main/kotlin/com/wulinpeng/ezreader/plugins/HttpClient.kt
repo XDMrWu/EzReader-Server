@@ -1,4 +1,4 @@
-package com.wulinpeng.reader.plugins
+package com.wulinpeng.ezreader.plugins
 
 import io.ktor.client.*
 import io.ktor.client.plugins.*

@@ -1,4 +1,4 @@
-package com.wulinpeng.reader.db
+package com.wulinpeng.ezreader.db
 
 import org.jetbrains.exposed.sql.Table
 

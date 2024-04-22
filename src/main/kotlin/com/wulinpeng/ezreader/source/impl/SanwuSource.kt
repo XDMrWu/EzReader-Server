@@ -1,12 +1,11 @@
-package com.wulinpeng.reader.source.impl
+package com.wulinpeng.ezreader.source.impl
 
-import com.wulinpeng.reader.plugins.defaultHttpClient
-import com.wulinpeng.reader.source.core.Book
-import com.wulinpeng.reader.source.core.BookSource
-import com.wulinpeng.reader.source.core.Chapter
-import com.wulinpeng.reader.source.core.CommonApi
+import com.wulinpeng.ezreader.plugins.defaultHttpClient
+import com.wulinpeng.ezreader.source.core.Book
+import com.wulinpeng.ezreader.source.core.BookSource
+import com.wulinpeng.ezreader.source.core.Chapter
+import com.wulinpeng.ezreader.source.core.CommonApi
 import de.jensklingenberg.ktorfit.Ktorfit
-import de.jensklingenberg.ktorfit.http.*
 import kotlinx.serialization.Serializable
 import org.jsoup.Jsoup
 import org.jsoup.nodes.TextNode

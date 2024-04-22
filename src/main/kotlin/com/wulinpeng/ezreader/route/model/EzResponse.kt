@@ -1,4 +1,4 @@
-package com.wulinpeng.reader.route.model
+package com.wulinpeng.ezreader.route.model
 
 import kotlinx.serialization.Serializable
 

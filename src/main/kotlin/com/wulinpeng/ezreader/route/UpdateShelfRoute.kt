@@ -1,16 +1,14 @@
-package com.wulinpeng.reader.route
+package com.wulinpeng.ezreader.route
 
-import com.wulinpeng.reader.db.BookShelf
-import com.wulinpeng.reader.plugins.EzReaderRouteConfigure
-import com.wulinpeng.reader.source.BookSourceManager
+import com.wulinpeng.ezreader.db.BookShelf
+import com.wulinpeng.ezreader.plugins.EzReaderRouteConfigure
+import com.wulinpeng.ezreader.source.BookSourceManager
 import io.ktor.server.application.*
-import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.statements.DeleteStatement.Companion.where
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import org.koin.core.annotation.Single
