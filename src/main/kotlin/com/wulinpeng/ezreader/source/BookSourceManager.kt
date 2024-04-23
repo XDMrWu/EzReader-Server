@@ -36,6 +36,14 @@ object BookSourceManager: CoroutineScope {
         return findSource(source)?.getContent(url)
     }
 
+    suspend fun hotWords(): List<String> {
+        return sources.map {
+            async(Dispatchers.IO) {
+                it.getHotWords()
+            }
+        }.awaitAll().flatten().distinct()
+    }
+
     private fun findSource(sourceName: String): BookSource? {
         return sources.firstOrNull { it.sourceName == sourceName }
     }

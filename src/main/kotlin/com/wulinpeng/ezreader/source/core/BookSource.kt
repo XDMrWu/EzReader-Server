@@ -23,4 +23,9 @@ interface BookSource {
      * 获取章节内容
      */
     suspend fun getContent(url: String): String?
+
+    /**
+     * 获取热搜词
+     */
+    suspend fun getHotWords(): List<String> = emptyList()
 }
