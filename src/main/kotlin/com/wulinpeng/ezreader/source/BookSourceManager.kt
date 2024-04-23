@@ -17,8 +17,8 @@ object BookSourceManager: CoroutineScope {
 
     private val sources: List<BookSource> = defaultKoin.getAll<BookSource>().sortedByDescending { it.priority }
 
-    suspend fun search(bookName: String): List<Book> {
-        val books =  sources.map {  source ->
+    suspend fun search(bookName: String, excludeSource: List<String> = emptyList()): List<Book> {
+        val books =  sources.filter { it.sourceName !in excludeSource }.map {  source ->
             async(Dispatchers.IO) {
                 source.searchBook(bookName)
             }
