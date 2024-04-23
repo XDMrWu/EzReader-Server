@@ -19,7 +19,7 @@ class SearchBookRoute: EzReaderRouteConfigure {
                     call.respondText(generateResponse(1, "Search key is empty"))
                     return@get
                 }
-                val result = BookSourceManager.search(bookName).map {
+                val result = BookSourceManager.get().search(bookName).map {
                     EzBook.fromBook(it)
                 }
                 call.respondText(generateResponse(result))

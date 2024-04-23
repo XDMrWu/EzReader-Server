@@ -1,6 +1,7 @@
 package com.wulinpeng.ezreader.source.core
 
 interface BookSource {
+
     val sourceName: String
 
     /**

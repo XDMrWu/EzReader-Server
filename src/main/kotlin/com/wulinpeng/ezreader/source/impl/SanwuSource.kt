@@ -1,13 +1,15 @@
 package com.wulinpeng.ezreader.source.impl
 
 import com.wulinpeng.ezreader.plugins.defaultHttpClient
-import com.wulinpeng.ezreader.source.core.Book
-import com.wulinpeng.ezreader.source.core.BookSource
-import com.wulinpeng.ezreader.source.core.Chapter
-import com.wulinpeng.ezreader.source.core.CommonApi
+import com.wulinpeng.ezreader.plugins.defaultKoin
+import com.wulinpeng.ezreader.source.core.*
 import de.jensklingenberg.ktorfit.Ktorfit
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.serialization.Serializable
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import org.jsoup.nodes.TextNode
 import org.koin.core.annotation.Single
 
@@ -37,9 +39,9 @@ class SanwuSource: BookSource {
         val document = Jsoup.parse(content)
         println(document)
         return document.getElementsByAttributeValue("id", "nr").map {
-            val name = it.child(0).getElementsByTag("a").first().text()
+            val name = it.child(0).tag("a").text()
             val author = it.child(2).text()
-            val url = it.child(0).getElementsByTag("a").first().attr("href")
+            val url = it.child(0).tag("a").attr("href")
             Book(name, author, null, url, sourceName, null)
         }
     }
@@ -53,14 +55,14 @@ class SanwuSource: BookSource {
 
     private fun parseBookDetail(url: String, content: String): Book {
         val document = Jsoup.parse(content)
-        val infoElement = document.getElementById("maininfo").getElementById("info")
+        val infoElement = document.id("maininfo").id("info")
         val name = infoElement.child(0).text()
         val author = infoElement.child(1).text().removePrefix("作者：").split(" ").first()
-        val image = BASE_URL + document.getElementById("fmimg").getElementsByTag("img").first().attr("src").removePrefix("/")
+        val image = BASE_URL + document.id("fmimg").tag("img").attr("src").removePrefix("/")
         val lastUpdateTime = infoElement.child(1).text().split("最后更新：").last()
-        val desc = document.getElementById("maininfo").getElementById("intro").child(0).childNodes().filterIsInstance<TextNode>().map { it.text() }.joinToString("\n")
+        val desc = document.id("maininfo").id("intro").child(0).childNodes().filterIsInstance<TextNode>().map { it.text() }.joinToString("\n")
         val lastUpdataChapter = infoElement.children().last().text().removePrefix("最新章节：")
-        val chapters = document.getElementById("list").child(0).children().let {
+        val chapters = document.id("list").child(0).children().let {
             val dtIndex = it.indexOfLast { it.tagName() == "dt" }
             it.subList(dtIndex + 1, it.size).map {
                 val title = it.child(0).text()
@@ -74,26 +76,24 @@ class SanwuSource: BookSource {
     override suspend fun getContent(url: String): String? {
         return runCatching {
             val response = api.getUrlContent(url)
-            val document = Jsoup.parse(response)
+            val firstDocument = Jsoup.parse(response)
             // 一章小说内容是分页的，这里获取页数
-            val pageCount = document.getElementsByClass("bookname").first().child(0).text().split("/").last().removeSuffix(")").toInt()
-            val contents = mutableListOf<String>()
-            repeat(pageCount) {
-                if (it == 0) {
-                    contents.add(parseChapterContent(response))
-                } else {
-                    val pageUrl = url.replace(".html", "_${it + 1}.html")
-                    val pageContent = api.getUrlContent(pageUrl)
-                    contents.add(parseChapterContent(pageContent))
+            val pageCount = firstDocument.clazz("bookname").child(0).text().split("/").last().removeSuffix(")").toInt()
+            (1..pageCount).map {
+                defaultKoin.get<CoroutineScope>().async {
+                    var document = firstDocument
+                    if (it > 1) {
+                        val pageUrl = url.replace(".html", "_${it}.html")
+                        document = Jsoup.parse(api.getUrlContent(pageUrl))
+                    }
+                    parseChapterContent(document)
                 }
-            }
-            contents.joinToString("\n")
+            }.awaitAll().joinToString("\n")
         }.getOrNull()
     }
 
-    private fun parseChapterContent(content: String): String {
-        val document = Jsoup.parse(content)
-        return document.getElementById("ccc").childNodes().filterIsInstance<TextNode>().map { it.text() }.joinToString("\n")
+    private fun parseChapterContent(document: Document): String {
+        return document.id("ccc").childNodes().filterIsInstance<TextNode>().map { it.text() }.joinToString("\n")
     }
 }
 

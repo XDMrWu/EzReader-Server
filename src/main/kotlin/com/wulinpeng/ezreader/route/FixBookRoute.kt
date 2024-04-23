@@ -33,7 +33,7 @@ class FixBookRoute: EzReaderRouteConfigure {
                 val bookName = queryResult[BookShelf.name]
                 val author = queryResult[BookShelf.author]
                 val (source, url) = parseId(bookId)
-                val newBook = BookSourceManager.search(bookName, listOf(source)).firstOrNull { it.author == author }
+                val newBook = BookSourceManager.get().search(bookName, listOf(source)).firstOrNull { it.author == author }
                 // 没有找到提到书源的书籍
                 if (newBook == null) {
                     call.respondText(generateResponse(1, "No new book found"))

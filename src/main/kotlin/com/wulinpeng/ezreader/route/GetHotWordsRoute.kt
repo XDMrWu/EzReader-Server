@@ -13,7 +13,7 @@ class GetHotWordsRoute: EzReaderRouteConfigure {
     override fun config(route: Route) {
         with(route) {
             get ("/hotWords") {
-                val words = BookSourceManager.hotWords()
+                val words = BookSourceManager.get().hotWords()
                 call.respondText(generateResponse(HotWordsResponse(words)))
             }
         }

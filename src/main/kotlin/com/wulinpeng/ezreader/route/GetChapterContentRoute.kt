@@ -19,7 +19,7 @@ class GetChapterContentRoute: EzReaderRouteConfigure {
                     return@get
                 }
                 val (source, url) = parseId(chapterId)
-                val content = BookSourceManager.content(source, url)
+                val content = BookSourceManager.get().content(source, url)
                 if (content.isNullOrEmpty()) {
                     call.respondText(generateResponse(1, "Content not found"))
                     return@get

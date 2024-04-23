@@ -1,10 +1,7 @@
 package com.wulinpeng.ezreader.source.impl
 
 import com.wulinpeng.ezreader.plugins.defaultHttpClient
-import com.wulinpeng.ezreader.source.core.Book
-import com.wulinpeng.ezreader.source.core.BookSource
-import com.wulinpeng.ezreader.source.core.Chapter
-import com.wulinpeng.ezreader.source.core.CommonApi
+import com.wulinpeng.ezreader.source.core.*
 import de.jensklingenberg.ktorfit.Ktorfit
 import org.jsoup.Jsoup
 import org.jsoup.nodes.TextNode
@@ -28,18 +25,17 @@ class BiqusaSource: BookSource {
 
     private fun parseBook(content: String): List<Book> {
         val document = Jsoup.parse(content)
-        println(document)
-        return document.getElementsByClass("novelslist2").first().getElementsByTag("ul").first().children().filter {
+        return document.clazz("novelslist2").tag("ul").children().filter {
             it.tagName() == "li"
         }.mapIndexedNotNull { index, element ->
             if (index == 0) {
                 return@mapIndexedNotNull null
             }
-            val name = element.child(1).getElementsByTag("a").first().text()
-            val author = element.child(2).getElementsByTag("a").first().text()
-            val url = BASE_URL + element.child(1).getElementsByTag("a").first().attr("href").removePrefix("/")
+            val name = element.child(1).tag("a").text()
+            val author = element.child(2).tag("a").text()
+            val url = BASE_URL + element.child(1).tag("a").attr("href").removePrefix("/")
             val lastUpdateTime = element.child(4).text()
-            val lastUpdateChapter = element.child(3).getElementsByTag("a").first().text()
+            val lastUpdateChapter = element.child(3).tag("a").text()
             Book(name, author, null, url, sourceName, null, lastUpdateTime = lastUpdateTime, lastUpdateChapter = lastUpdateChapter)
         }
     }
@@ -53,14 +49,14 @@ class BiqusaSource: BookSource {
 
     private fun parseBookDetail(url: String, content: String): Book {
         val document = Jsoup.parse(content)
-        val infoElement = document.getElementById("maininfo").getElementById("info")
+        val infoElement = document.id("maininfo").id("info")
         val name = infoElement.child(0).text()
-        val author = infoElement.child(1).getElementsByTag("a").first().text()
-        val image = BASE_URL + document.getElementById("fmimg").getElementsByTag("img").first().attr("src").removePrefix("/")
+        val author = infoElement.child(1).tag("a").text()
+        val image = BASE_URL + document.id("fmimg").tag("img").attr("src").removePrefix("/")
         val lastUpdateTime = infoElement.child(3).text().split("最后更新：").last()
-        val desc = document.getElementById("maininfo").getElementById("intro").childNodes().filterIsInstance<TextNode>().map { it.text() }.joinToString("\n")
+        val desc = document.id("maininfo").id("intro").childNodes().filterIsInstance<TextNode>().map { it.text() }.joinToString("\n")
         val lastUpdateChapter = infoElement.children().last().text().removePrefix("最新章节：")
-        val chapters = document.getElementById("list").child(0).children().let {
+        val chapters = document.id("list").child(0).children().let {
             val dtIndex = it.indexOfLast { it.tagName() == "dt" }
             it.subList(dtIndex + 1, it.size).map {
                 val title = it.child(0).text()
@@ -75,12 +71,7 @@ class BiqusaSource: BookSource {
         return runCatching {
             val response = api.getUrlContent(url)
             val document = Jsoup.parse(response)
-            document.getElementById("content").textNodes().map { it.text() }.joinToString("\n")
+            document.id("content").textNodes().map { it.text() }.joinToString("\n")
         }.getOrNull()
-    }
-
-    private fun parseChapterContent(content: String): String {
-        val document = Jsoup.parse(content)
-        return document.getElementById("ccc").childNodes().filterIsInstance<TextNode>().map { it.text() }.joinToString("\n")
     }
 }

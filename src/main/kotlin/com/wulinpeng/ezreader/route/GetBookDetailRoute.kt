@@ -20,7 +20,7 @@ class GetBookDetailRoute: EzReaderRouteConfigure {
                     return@get
                 }
                 val (source, url) = parseId(bookId)
-                val book = BookSourceManager.detail(source, url)
+                val book = BookSourceManager.get().detail(source, url)
                 if (book == null) {
                     call.respondText(generateResponse(1, "Book not found"))
                     return@get

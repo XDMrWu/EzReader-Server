@@ -4,6 +4,7 @@ import com.wulinpeng.ezreader.plugins.defaultKoin
 import com.wulinpeng.ezreader.source.core.Book
 import com.wulinpeng.ezreader.source.core.BookSource
 import kotlinx.coroutines.*
+import org.koin.core.annotation.Single
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -11,7 +12,12 @@ import kotlin.coroutines.CoroutineContext
  * date：2021/10/14 16:58
  * desc:
  */
-object BookSourceManager: CoroutineScope {
+@Single(binds = [CoroutineScope::class])
+class BookSourceManager: CoroutineScope {
+
+    companion object {
+        fun get() = defaultKoin.get<BookSourceManager>()
+    }
 
     override val coroutineContext: CoroutineContext = SupervisorJob()
 
