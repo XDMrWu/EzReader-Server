@@ -8,6 +8,8 @@ import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
 import org.koin.core.annotation.Single
 
 @Single
@@ -17,7 +19,7 @@ class ChatBotRoute: EzReaderRouteConfigure {
             get("/chatBot") {
                 val query = context.request.queryParameters["query"]
                 val flow = CozeApi.sendMessage(query ?: "").filter { !it.isNullOrEmpty() }.map {
-                    SseEvent(data = it)
+                    SseEvent(data = defaultJson.encodeToString(SseData(it)))
                 }
 
                 call.respondSse(flow)
@@ -25,3 +27,6 @@ class ChatBotRoute: EzReaderRouteConfigure {
         }
     }
 }
+
+@Serializable
+data class SseData(val content: String)
