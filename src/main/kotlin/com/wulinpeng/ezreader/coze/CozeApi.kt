@@ -15,7 +15,7 @@ var cozeBotToken = ""
 object CozeApi {
     suspend fun sendMessage(query: String): Flow<String> {
         val header = mapOf("Authorization" to "Bearer $cozeBotToken")
-        val body = CozeBody("7362124251610005512", "UserDefault", query)
+        val body = CozeBody("7362124251610005512", "UserDefault", query, true)
         return defaultHttpClient
             .readSse("https://api.coze.com/open_api/v2/chat", { header }, { body })
             .map {
@@ -31,4 +31,4 @@ object CozeApi {
 }
 
 @Serializable
-private data class CozeBody(val bot_id: String, val user: String, val query: String, val stream: Boolean = true)
+private data class CozeBody(val bot_id: String, val user: String, val query: String, val stream: Boolean)

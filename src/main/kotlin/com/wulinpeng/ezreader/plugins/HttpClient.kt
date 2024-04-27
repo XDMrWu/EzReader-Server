@@ -7,6 +7,7 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
+import kotlinx.serialization.json.Json
 
 lateinit var defaultHttpClient: HttpClient
 
@@ -18,7 +19,9 @@ fun Application.configureHttpClient() {
             socketTimeoutMillis = 30000
         }
         install(ContentNegotiation) {
-            json()
+            json(Json {
+                ignoreUnknownKeys = true
+            })
         }
         defaultRequest {
             header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537")

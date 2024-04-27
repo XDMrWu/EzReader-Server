@@ -42,6 +42,8 @@ public fun HttpClient.readSse(
                     throw UnauthorizedError()
                 }
                 if (!response.isEventStream()) {
+                    println(response.contentType()?.contentType)
+                    println(response.contentType()?.contentSubtype)
                     throw NotEventStreamError()
                 }
                 response.bodyAsChannel()
