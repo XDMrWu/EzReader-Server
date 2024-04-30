@@ -3,6 +3,7 @@ package com.wulinpeng.ezreader.route
 import com.wulinpeng.ezreader.db.BookShelf
 import com.wulinpeng.ezreader.plugins.EzReaderRouteConfigure
 import com.wulinpeng.ezreader.source.BookSourceManager
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -22,7 +23,7 @@ class UpdateShelfRoute: EzReaderRouteConfigure {
                 val type = context.request.queryParameters["type"]?.toInt() ?: 1
                 val chapterNumber = context.request.queryParameters["chapter_number"]?.toInt() ?: 1
                 if (bookId.isNullOrEmpty()) {
-                    call.respondText(generateResponse(1, "Search key is empty"))
+                    call.respondText(generateResponse(1, "Search key is empty"), ContentType.Application.Json)
                     return@get
                 }
 
@@ -32,13 +33,13 @@ class UpdateShelfRoute: EzReaderRouteConfigure {
                             transaction {
                                 BookShelf.deleteWhere { BookShelf.bookId eq bookId }
                             }
-                            call.respondText(generateResponse(0, ""))
+                            call.respondText(generateResponse(0, ""), ContentType.Application.Json)
                         }
                         1 -> {
                             val (source, url) = parseId(bookId)
                             val book = BookSourceManager.get().detail(source, url)
                             if (book == null) {
-                                call.respondText(generateResponse(1, "Book not found"))
+                                call.respondText(generateResponse(1, "Book not found"), ContentType.Application.Json)
                                 return@get
                             }
                             transaction {
@@ -51,7 +52,7 @@ class UpdateShelfRoute: EzReaderRouteConfigure {
                                     it[BookShelf.desc] = book.desc
                                 }
                             }
-                            call.respondText(generateResponse(0, ""))
+                            call.respondText(generateResponse(0, ""), ContentType.Application.Json)
                         }
                         2 -> {
                             transaction {
@@ -61,11 +62,11 @@ class UpdateShelfRoute: EzReaderRouteConfigure {
                                     it[BookShelf.progress] = chapterNumber
                                 }
                             }
-                            call.respondText(generateResponse(0, ""))
+                            call.respondText(generateResponse(0, ""), ContentType.Application.Json)
                         }
                     }
                 }.onFailure {
-                    call.respondText(generateResponse(1, it.message ?: "Unknown error"))
+                    call.respondText(generateResponse(1, it.message ?: "Unknown error"), ContentType.Application.Json)
                 }
             }
         }

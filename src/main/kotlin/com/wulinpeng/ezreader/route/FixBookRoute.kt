@@ -4,6 +4,7 @@ import com.wulinpeng.ezreader.db.BookShelf
 import com.wulinpeng.ezreader.plugins.EzReaderRouteConfigure
 import com.wulinpeng.ezreader.route.model.EzBook
 import com.wulinpeng.ezreader.source.BookSourceManager
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -19,7 +20,7 @@ class FixBookRoute: EzReaderRouteConfigure {
             get("/fixBook") {
                 val bookId = context.request.queryParameters["bookId"]
                 if (bookId.isNullOrEmpty()) {
-                    call.respondText(generateResponse(1, "BookId key is empty"))
+                    call.respondText(generateResponse(1, "BookId key is empty"), ContentType.Application.Json)
                     return@get
                 }
                 // 查询书架信息
@@ -27,7 +28,7 @@ class FixBookRoute: EzReaderRouteConfigure {
                     BookShelf.selectAll().where {BookShelf.bookId eq bookId}.singleOrNull()
                 }
                 if (queryResult == null) {
-                    call.respondText(generateResponse(1, "BookShell not found bookId: $bookId"))
+                    call.respondText(generateResponse(1, "BookShell not found bookId: $bookId"), ContentType.Application.Json)
                     return@get
                 }
                 val bookName = queryResult[BookShelf.name]
@@ -36,7 +37,7 @@ class FixBookRoute: EzReaderRouteConfigure {
                 val newBook = BookSourceManager.get().search(bookName, listOf(source)).firstOrNull { it.author == author }
                 // 没有找到提到书源的书籍
                 if (newBook == null) {
-                    call.respondText(generateResponse(1, "No new book found"))
+                    call.respondText(generateResponse(1, "No new book found"), ContentType.Application.Json)
                     return@get
                 }
                 val newBookId = generateId(newBook.source, newBook.url)
@@ -48,7 +49,7 @@ class FixBookRoute: EzReaderRouteConfigure {
                         it[BookShelf.desc] = newBook.desc
                     }
                 }
-                call.respondText(generateResponse(EzBook.fromBook(newBook)))
+                call.respondText(generateResponse(EzBook.fromBook(newBook)), ContentType.Application.Json)
             }
         }
     }

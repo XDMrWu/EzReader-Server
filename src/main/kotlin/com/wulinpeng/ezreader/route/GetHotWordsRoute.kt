@@ -2,6 +2,7 @@ package com.wulinpeng.ezreader.route
 
 import com.wulinpeng.ezreader.plugins.EzReaderRouteConfigure
 import com.wulinpeng.ezreader.source.BookSourceManager
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -14,7 +15,7 @@ class GetHotWordsRoute: EzReaderRouteConfigure {
         with(route) {
             get ("/hotWords") {
                 val words = BookSourceManager.get().hotWords()
-                call.respondText(generateResponse(words))
+                call.respondText(generateResponse(words), ContentType.Application.Json)
             }
         }
     }
