@@ -18,10 +18,10 @@ import org.koin.core.component.get
 /**
  * author：wulinpeng
  * date：2021/7/18 22:11
- * desc:
+ * desc: TODO 为降低采集耗时暂时先关闭本书源，后续支持分页后开启
  */
 
-@Single
+//@Single
 class SanwuSource: BookSource {
 
     private val BASE_URL = "https://www.35wx.la/"

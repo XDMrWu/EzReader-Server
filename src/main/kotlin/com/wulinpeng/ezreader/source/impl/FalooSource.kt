@@ -8,8 +8,9 @@ import org.koin.core.annotation.Single
 
 /**
  * 飞卢小说,仅支持热搜词
+ * 热搜词质量不高，目前先不生效
  */
-@Single
+//@Single
 class FalooSource: BookSource {
     private val BASE_URL = "https://wap.faloo.com/"
     private val api = Ktorfit.Builder().httpClient(defaultHttpClient).baseUrl("$BASE_URL").build().create<CommonApi>()

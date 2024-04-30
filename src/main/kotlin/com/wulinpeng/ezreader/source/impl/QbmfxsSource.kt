@@ -2,12 +2,17 @@ package com.wulinpeng.ezreader.source.impl
 
 import com.wulinpeng.ezreader.plugins.defaultHttpClient
 import com.wulinpeng.ezreader.plugins.defaultKoin
+import com.wulinpeng.ezreader.route.defaultJson
 import com.wulinpeng.ezreader.source.core.*
 import de.jensklingenberg.ktorfit.Ktorfit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import org.jsoup.Jsoup
 import org.koin.core.annotation.Single
 import org.koin.core.component.get
@@ -95,5 +100,14 @@ class QbmfxsSource: BookSource {
                 }.map { it.text() }.joinToString("\n")
             }
         }.awaitAll().joinToString("\n")
+    }
+
+    override suspend fun getHotWords(): List<String> {
+        return runCatching {
+            val document = Jsoup.parse(api.getUrlContent("https://m.qbmfxs.com/search"))
+            document.clazz("show").tags("a").map {
+                it.text()
+            }
+        }.getOrNull() ?: emptyList()
     }
 }
