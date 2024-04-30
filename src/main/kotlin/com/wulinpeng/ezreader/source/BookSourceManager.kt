@@ -35,7 +35,7 @@ class BookSourceManager: CoroutineScope {
     }
 
     suspend fun detail(source: String, url: String): Book? {
-        return findSource(source)?.getBookDetail(url)
+        return findSource(source)?.getBookDetail(url, false)
     }
 
     suspend fun content(source: String, url: String): String? {

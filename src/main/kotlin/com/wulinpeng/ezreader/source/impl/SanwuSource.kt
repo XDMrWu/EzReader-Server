@@ -5,6 +5,7 @@ import com.wulinpeng.ezreader.plugins.defaultKoin
 import com.wulinpeng.ezreader.source.core.*
 import de.jensklingenberg.ktorfit.Ktorfit
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.serialization.Serializable
@@ -12,6 +13,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.TextNode
 import org.koin.core.annotation.Single
+import org.koin.core.component.get
 
 /**
  * author：wulinpeng
@@ -35,25 +37,25 @@ class SanwuSource: BookSource {
         }.getOrElse { emptyList() }
     }
 
-    private fun parseBook(content: String): List<Book> {
+    private suspend fun parseBook(content: String): List<Book> {
         val document = Jsoup.parse(content)
         println(document)
         return document.getElementsByAttributeValue("id", "nr").map {
-            val name = it.child(0).tag("a").text()
-            val author = it.child(2).text()
-            val url = it.child(0).tag("a").attr("href")
-            Book(name, author, null, url, sourceName, null)
-        }
+            get<CoroutineScope>().async(Dispatchers.IO) {
+                val url = it.child(0).tag("a").attr("href")
+                getBookDetail(url, true)
+            }
+        }.awaitAll().filterNotNull()
     }
 
-    override suspend fun getBookDetail(url: String): Book? {
+    override suspend fun getBookDetail(url: String, skipChapter: Boolean): Book? {
         return runCatching {
             val response = api.getUrlContent(url)
-            parseBookDetail(url, response)
+            parseBookDetail(url, response, skipChapter)
         }.getOrNull()
     }
 
-    private fun parseBookDetail(url: String, content: String): Book {
+    private fun parseBookDetail(url: String, content: String, skipChapter: Boolean): Book {
         val document = Jsoup.parse(content)
         val infoElement = document.id("maininfo").id("info")
         val name = infoElement.child(0).text()
@@ -62,7 +64,7 @@ class SanwuSource: BookSource {
         val lastUpdateTime = infoElement.child(1).text().split("最后更新：").last()
         val desc = document.id("maininfo").id("intro").child(0).childNodes().filterIsInstance<TextNode>().map { it.text() }.joinToString("\n")
         val lastUpdataChapter = infoElement.children().last().text().removePrefix("最新章节：")
-        val chapters = document.id("list").child(0).children().let {
+        val chapters = if (skipChapter) null else document.id("list").child(0).children().let {
             val dtIndex = it.indexOfLast { it.tagName() == "dt" }
             it.subList(dtIndex + 1, it.size).map {
                 val title = it.child(0).text()

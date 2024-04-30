@@ -5,10 +5,12 @@ import com.wulinpeng.ezreader.plugins.defaultKoin
 import com.wulinpeng.ezreader.source.core.*
 import de.jensklingenberg.ktorfit.Ktorfit
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import org.jsoup.Jsoup
 import org.koin.core.annotation.Single
+import org.koin.core.component.get
 
 @Single
 class QbmfxsSource: BookSource {
@@ -26,30 +28,26 @@ class QbmfxsSource: BookSource {
         }.getOrElse { emptyList() }
     }
 
-    private fun parseBook(content: String): List<Book> {
+    private suspend fun parseBook(content: String): List<Book> {
         val document = Jsoup.parse(content)
         return document.clazz("show").tag("ul").children().filter {
             it.tagName() == "a"
-        }.mapIndexedNotNull { index, element ->
-            val bookElement = element.clazz("book")
-            val name = bookElement.child(0).text()
-            val author = element.clazz("author").text()
-            val url = BASE_URL + element.attr("href").removePrefix("/")
-            val image = element.clazz("image").tag("img").attr("data-original")
-            val desc = bookElement.child(1).text()
-            val category = bookElement.clazz("type").text()
-            Book(name, author, image, url, sourceName, desc, category = category)
-        }
+        }.mapIndexed { index, element ->
+            get<CoroutineScope>().async(Dispatchers.IO) {
+                val url = BASE_URL + element.attr("href").removePrefix("/")
+                getBookDetail(url, true)
+            }
+        }.awaitAll().filterNotNull()
     }
 
-    override suspend fun getBookDetail(url: String): Book? {
+    override suspend fun getBookDetail(url: String, skipChapter: Boolean): Book? {
         return runCatching {
             val response = api.getUrlContent(url)
-            parseBookDetail(url, response)
+            parseBookDetail(url, response, skipChapter)
         }.getOrNull()
     }
 
-    private suspend fun parseBookDetail(url: String, content: String): Book {
+    private suspend fun parseBookDetail(url: String, content: String, skipChapter: Boolean): Book {
         val document = Jsoup.parse(content)
         val infoElement = document.clazz("book-intro")
         val name = infoElement.clazz("line_1").text()
@@ -59,7 +57,7 @@ class QbmfxsSource: BookSource {
         val category = infoElement.clazz("type").tag("a").text()
         // 获取章节
         val catalogUrl = BASE_URL + document.clazz("catalog").clazz("title").tag("a").attr("href").removePrefix("/")
-        val chapters = parseCatalog(catalogUrl)
+        val chapters = if (skipChapter) null else parseCatalog(catalogUrl)
         return Book(name, author, image, url, sourceName, desc, null, null, category, chapters)
     }
 

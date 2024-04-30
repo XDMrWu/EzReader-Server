@@ -1,6 +1,8 @@
 package com.wulinpeng.ezreader.source.core
 
-interface BookSource {
+import org.koin.core.component.KoinComponent
+
+interface BookSource: KoinComponent {
 
     val sourceName: String
 
@@ -18,7 +20,7 @@ interface BookSource {
     /**
      * 获取书籍详情
      */
-    suspend fun getBookDetail(url: String): Book? = null
+    suspend fun getBookDetail(url: String, skipChapter: Boolean): Book? = null
 
     /**
      * 获取章节内容
