@@ -14,11 +14,8 @@ class GetHotWordsRoute: EzReaderRouteConfigure {
         with(route) {
             get ("/hotWords") {
                 val words = BookSourceManager.get().hotWords()
-                call.respondText(generateResponse(HotWordsResponse(words)))
+                call.respondText(generateResponse(words))
             }
         }
     }
 }
-
-@Serializable
-data class HotWordsResponse(val words: List<String>)
