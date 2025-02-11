@@ -17,7 +17,10 @@ import org.jsoup.Jsoup
 import org.koin.core.annotation.Single
 import org.koin.core.component.get
 
-@Single
+/**
+ * TODO 失效了
+ */
+//@Single
 class QbmfxsSource: BookSource {
 
     private val BASE_URL = "https://m.qbmfxs.com/"
